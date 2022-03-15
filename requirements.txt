@@ -1,0 +1,15 @@
+Django
+djangorestframework
+psycopg2-binary
+python-dotenv
+djangorestframework-simplejwt
+django-cors-headers
+pillow
+django-oauth-toolkit
+django-heroku
+psycopg2
+pusher
+gunicorn
+dj-database-url
+whitenoise
+pytz
