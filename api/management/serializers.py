@@ -47,7 +47,7 @@ class RentalHouseSerializer(ModelSerializer):
 
     class Meta:
         model = House
-        fields = ["id", "name", "image", "price", "updated_date", "type_house", "description", "bed", "guest", "bath_room", "bed_room", "address", "created_by"]
+        fields = ["id", "name", "image", "image1", "image2", "image3", "image4", "price", "updated_date", "type_house", "description", "bed", "guest", "bath_room", "bed_room", "address", "created_by"]
 
 
 class RentalHouseManagementSerializer(ModelSerializer):
@@ -62,20 +62,28 @@ class RentalHouseManagementSerializer(ModelSerializer):
 class HouseForRentSerializer(ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     image = serializers.ImageField()
+    image1 = serializers.ImageField()
+    image2 = serializers.ImageField()
+    image3 = serializers.ImageField()
+    image4 = serializers.ImageField()
     type_house_id = serializers.IntegerField()
 
     class Meta:
         model = House
-        fields = ["id", "name", "image", "price", "type_house_id", "bed", "guest", "bath_room", "bed_room", "description", "address"]
+        fields = ["id", "name", "image", "image1", "image2", "image3", "image4", "price", "type_house_id", "bed", "guest", "bath_room", "bed_room", "description", "address"]
 
 
 class HouseUpdateSerializer(ModelSerializer):
     image = serializers.ImageField(required=False)
+    image1 = serializers.ImageField(required=False)
+    image2 = serializers.ImageField(required=False)
+    image3 = serializers.ImageField(required=False)
+    image4 = serializers.ImageField(required=False)
     type_house_id = serializers.IntegerField(required=False)
 
     class Meta:
         model = House
-        fields = ["id", "name", "image", "price", "type_house_id", "bed", "guest", "bath_room", "bed_room", "description", "address"]
+        fields = ["id", "name", "image", "image1", "image2", "image3", "image4", "price", "type_house_id", "bed", "guest", "bath_room", "bed_room", "description", "address"]
 
 
 class BookingManagementSerializer(ModelSerializer):

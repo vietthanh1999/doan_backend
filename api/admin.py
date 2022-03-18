@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import  mark_safe
-from .models import TypeHouse, House, Service, User, Comment, Action, Rating, RentManage, Message, Blog
+from .models import HostRegister, TypeHouse, House, Service, User, Comment, Action, Rating, RentManage, Message, Blog
 
 
 class HouseAdmin(admin.ModelAdmin):
@@ -23,3 +23,4 @@ admin.site.register(Rating)
 admin.site.register(RentManage)
 admin.site.register(Message)
 admin.site.register(Blog)
+admin.site.register(HostRegister)

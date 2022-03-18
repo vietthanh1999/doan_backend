@@ -54,6 +54,7 @@ class HouseViewSet(viewsets.ModelViewSet):
     def get_detail_house(self, request, pk):
         try:
             h = House.objects.get(pk=pk)
+            print(h)
         except House.DoesNotExits:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -117,7 +118,7 @@ class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateA
     @action(methods=['get'], detail=True, url_path="get-list-comment")
     def get_list_comment(self, request, pk):
 
-        queryset = Comment.objects.filter(house=pk)
+        queryset = Comment.objects.filter(house=pk).order_by("-created_date")
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)

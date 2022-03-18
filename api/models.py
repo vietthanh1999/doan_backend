@@ -6,7 +6,7 @@ from django.db import models
 class User(AbstractUser):
     avatar = models.ImageField(upload_to='uploads/%Y/%m')
     level = models.IntegerField(default=3)
-
+    phone_number = models.CharField(max_length=16, blank=True, null=True)
 
 class TypeHouse(models.Model):
     name = models.CharField(max_length=200, null=False, unique=True)
@@ -25,6 +25,11 @@ class ItemBase(models.Model):
     updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
+
+class HostRegister(ItemBase):
+    before_identification = models.ImageField(upload_to='identification/%Y/%m', default=None)
+    after_identification = models.ImageField(upload_to='identification/%Y/%m', default=None)
+    description = models.TextField(null=True, blank=True)
 
 class House(ItemBase):
     class Meta:

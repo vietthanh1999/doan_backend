@@ -8,6 +8,7 @@ from api.user.serializers import UserSerializer, UserInfoSerializer
 
 class TypeHouseSerializer(ModelSerializer):
     name = serializers.CharField(required=False)
+
     class Meta:
         model = TypeHouse
         fields = ["id", "name", "delete_flag"]
@@ -16,21 +17,25 @@ class TypeHouseSerializer(ModelSerializer):
 class HouseSerializer(ModelSerializer):
     created_by = UserInfoSerializer()
     type_house = TypeHouseSerializer()
-    image = SerializerMethodField()
+    image = serializers.ImageField()
+    image1 = serializers.ImageField()
+    image2 = serializers.ImageField()
+    image3 = serializers.ImageField()
+    image4 = serializers.ImageField()
 
-    def get_image(self, house):
-        request = self.context['request']
-        name = house.image.name
-        if name.startswith("static/"):
-            path = '/%s' % name
-        else:
-            path = '/static/%s' % name
-
-        return request.build_absolute_uri(path)
+    # def get_image(self, house):
+    #     request = self.context['request']
+    #     name = house.image.name
+    #     if name.startswith("static/"):
+    #         path = '/%s' % name
+    #     else:
+    #         path = '/static/%s' % name
+    #
+    #     return request.build_absolute_uri(path)
 
     class Meta:
         model = House
-        fields = ["id", "name", "image", "price", "created_date", "type_house", "bed", "guest", "bath_room", "bed_room", "address", "description", "created_by"]
+        fields = ["id", "name", "image", "image1", "image2", "image3", "image4", "price", "created_date", "type_house", "bed", "guest", "bath_room", "bed_room", "address", "description", "created_by"]
 
 
 class CommentSerializer(ModelSerializer):

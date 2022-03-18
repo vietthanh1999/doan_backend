@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
-from api.models import House, TypeHouse, User, Comment, Action, Rating, RentManage
+from api.models import HostRegister, House, TypeHouse, User, Comment, Action, Rating, RentManage
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 
@@ -34,6 +34,27 @@ class MySimpleJWTSerializer(TokenObtainPairSerializer):
         return super().validate(credentials)
 
 
+class MySimpleJWTAdminSerializer(TokenObtainPairSerializer):
+    
+    def validate(self, attrs):
+        print(attrs)
+        credentials = {
+            'username': '',
+            'password': attrs.get("password"),
+            'level': None
+        }
+        user_obj = User.objects.filter(username=attrs.get("username")).first()
+        if user_obj:
+            credentials['username'] = user_obj.username
+            credentials['level'] = user_obj.level
+
+        if  credentials['level'] != 1:
+            return {}
+
+
+        return super().validate(credentials)
+
+
 class UserSerializer(ModelSerializer):
     level = serializers.IntegerField(required=False)
 
@@ -57,7 +78,6 @@ class UserInfoSerializer(ModelSerializer):
     avatar = SerializerMethodField()
 
     def get_avatar(self, user):
-        print(self.context)
         request = self.context['request']
         name = user.avatar.name
         if name.startswith("static/"):
@@ -86,12 +106,35 @@ class UserUpdateSerializer(ModelSerializer):
 class UserAvatarSerializer(ModelSerializer):
 
     class Meta:
-        model = House
+        model = User
         fields = ["avatar"]
 
+class UserLevelSerializer(ModelSerializer):
+    
+    class Meta:
+        model = User
+        fields = ["level"]
 
 class ChangePasswordSerializer(serializers.Serializer):
     model = User
 
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
+
+class HostRegisterSerializer(ModelSerializer):
+    before_identification = serializers.ImageField()
+    after_identification = serializers.ImageField()
+    
+    class Meta:
+        model = HostRegister
+        fields = ["id", "description", "before_identification", "after_identification"]
+
+class GetHostRegisterSerializer(ModelSerializer):
+    created_by = UserInfoSerializer()
+    before_identification = serializers.ImageField()
+    after_identification = serializers.ImageField()
+    
+    class Meta:
+        model = HostRegister
+        fields = ["id", "description", "before_identification", "after_identification", "created_by"]
+

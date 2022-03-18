@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 from django.http import JsonResponse
+from django.db.models import Count
 
 from api.models import RentManage, House
 from .serializers import RentManageSerializer, GetRentManageSerializer, RentalHouseManagementSerializer, RentalHouseSerializer, HouseForRentSerializer, HouseUpdateSerializer, BookingManagementSerializer, BookingUpdateSerializer
@@ -90,7 +91,6 @@ class HouseForRentViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         res = super().create(request, *args, **kwargs)
         data = res.data
-
         obj = House.objects.get(id=data["id"])
         obj.created_by = request.user
         obj.save()
@@ -142,8 +142,10 @@ class BookingManagementViewSet(viewsets.ModelViewSet):
     serializer_class = BookingManagementSerializer
 
     def list(self, request):
-
-        queryset = RentManage.objects.filter(house_id__created_by=request.user).order_by('-created_date')
+        if request.user.level != 1:
+            queryset = RentManage.objects.filter(house_id__created_by=request.user).order_by('-created_date')
+        else:
+            queryset = RentManage.objects.all().order_by('-created_date')
 
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -172,7 +174,7 @@ class BookingManagementViewSet(viewsets.ModelViewSet):
         except:
             return Response({"data": "Bad Request"}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(methods=["get"], detail=False, url_path="update-status", url_name="get-detail-house")
+    @action(methods=["get"], detail=False, url_path="get-income-statistics", url_name="get-income-statistics")
     def get_income_statistics(self, request):
         try:
             income_list = []
@@ -194,4 +196,37 @@ class BookingManagementViewSet(viewsets.ModelViewSet):
                 "results": income_list
             })
 
+    @action(methods=["get"], detail=False, url_path="get-income-statistics", url_name="get-income-statistics")
+    def get_info_doughnut(self, request):
+        try:
+            income_list = []
+
+            rent_list = RentManage.objects.filter(house_id__created_by=request.user).values('house_id', 'house_id__name').annotate(dcount=Count('house_id'))
+            print(rent_list)
+            for rent in rent_list:
+                income_list.append(rent)
+
+        except RentManage.DoesNotExits:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        return JsonResponse({
+            "results": income_list
+        })
+
         # return Response(data=JsonResponse(a), status=status.HTTP_200_OK)
+
+    @action(methods=["get"], detail=True, url_path="check-comment", url_name="check-comment")
+    def check_comment(self, request, house_id):
+        try:
+            checkComment = False
+
+            rent_list = RentManage.objects.filter(created_by=request.user, house_id=house_id)
+            if (len(rent_list) > 0):
+                checkComment = True
+
+        except RentManage.DoesNotExits:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        return JsonResponse({
+            "results": checkComment
+        })
